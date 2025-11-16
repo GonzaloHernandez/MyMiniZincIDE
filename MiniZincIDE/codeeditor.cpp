@@ -233,16 +233,11 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
                 for (int i = 0; i < posInLine; i++) {
                     if (line[i] == '\t') {
                         distanceFromTabStop = 0;
-                    } else if (line[i].isSpace()) {
-                        distanceFromTabStop++;
                     } else {
-                        break;
+                        distanceFromTabStop = (distanceFromTabStop + 1) % indentSize;
                     }
                 }
-                auto toAdd = distanceFromTabStop % indentSize;
-                if (toAdd == 0) {
-                    toAdd = indentSize;
-                }
+                auto toAdd = indentSize - distanceFromTabStop;
                 cursor.insertText(QString(" ").repeated(toAdd));
             }
         } else {
@@ -263,6 +258,80 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_Escape) {
         e->accept();
         emit escPressed();
+    } else if (e->key() == Qt::Key_Backspace) {
+        QTextCursor cursor = textCursor();
+        if (!cursor.hasSelection() && cursor.positionInBlock() > 0) {
+            QString line = cursor.block().text();
+            int pos = cursor.positionInBlock();
+            if (!useTabs) {
+                if (line.left(pos).trimmed().isEmpty()) {
+                    int removeCount = (pos % indentSize == 0 ? indentSize : pos % indentSize);
+                    cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, removeCount);
+                    cursor.removeSelectedText();
+                    setTextCursor(cursor);
+                    ensureCursorVisible();
+                    e->accept();
+                    return;
+                }
+            }
+            if (cursor.positionInBlock() < cursor.block().length()) {
+                QChar charBefore = line.at(pos - 1);
+                QChar charAfter  = line.at(pos);
+                if ((charBefore == '(' && charAfter == ')') ||
+                    (charBefore == '[' && charAfter == ']') ||
+                    (charBefore == '{' && charAfter == '}')) 
+                {
+                    cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
+                    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 2);
+                    cursor.removeSelectedText();
+                    setTextCursor(cursor);
+                    ensureCursorVisible();
+                    e->accept();
+                    return;
+                }
+            }
+        }
+        QPlainTextEdit::keyPressEvent(e);
+    } else if (e->key() == Qt::Key_ParenLeft) {
+        e->accept();
+        auto cursor = textCursor();
+        QString selected = cursor.selectedText();
+        cursor.insertText("(" + selected + ")");
+        cursor.movePosition(QTextCursor::Left); 
+        setTextCursor(cursor);
+    } else if (e->key() == Qt::Key_BracketLeft) {
+        e->accept();
+        auto cursor = textCursor();
+        QString selected = cursor.selectedText();
+        cursor.insertText("[" + selected + "]");
+        cursor.movePosition(QTextCursor::Left); 
+        setTextCursor(cursor);
+    } else if (e->key() == Qt::Key_BraceLeft) {
+        e->accept();
+        auto cursor = textCursor();
+        QString selected = cursor.selectedText();
+        cursor.insertText("{" + selected + "}");
+        cursor.movePosition(QTextCursor::Left); 
+        setTextCursor(cursor);
+    } else if ( e->key() == Qt::Key_ParenRight ||
+                e->key() == Qt::Key_BracketRight ||
+                e->key() == Qt::Key_BraceRight ) {
+
+        QTextCursor cursor = textCursor();        
+        if (cursor.positionInBlock() < cursor.block().length() - 1) { 
+            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+            QString charRight = cursor.selectedText();
+            cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
+           
+            QChar typedChar = e->text().isEmpty() ? QChar() : e->text().at(0);
+            if (typedChar.isPrint() && charRight == typedChar) {
+                e->accept();
+                cursor.movePosition(QTextCursor::Right);
+                setTextCursor(cursor);
+                return;
+            }
+        }
+        QPlainTextEdit::keyPressEvent(e);    
     } else {
         bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_E); // CTRL+E
         if (!isShortcut) // do not process the shortcut when we have a completer

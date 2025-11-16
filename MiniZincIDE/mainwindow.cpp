@@ -116,7 +116,7 @@ void MainWindow::init(const QString& projectFile)
     solverConfCombo = new QComboBox;
     solverConfCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     solverConfCombo->setMinimumWidth(100);
-    QLabel* solverConfLabel = new QLabel("Solver configuration:");
+    solverConfLabel = new QLabel("Solver configuration:");
     QFont solverConfLabelFont = solverConfLabel->font();
     solverConfLabelFont.setPointSizeF(solverConfLabelFont.pointSizeF()*0.9);
     solverConfLabel->setFont(solverConfLabelFont);
@@ -155,7 +155,9 @@ void MainWindow::init(const QString& projectFile)
     QWidget* toolBarSpacer = new QWidget();
     toolBarSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     ui->toolBar->insertWidget(ui->actionEditSolverConfig, toolBarSpacer);
-
+    
+    connect(ui->actionHide_tool_texts_bar, &QAction::triggered,
+            this,           &MainWindow::on_actionHide_tool_bar_texts_triggered);
     newFileCounter = 1;
 
     profileInfoVisible = false;
@@ -230,6 +232,9 @@ void MainWindow::init(const QString& projectFile)
 
     if (settings.value("toolbarHidden", false).toBool()) {
         on_actionHide_tool_bar_triggered();
+    }
+    if (settings.value("toolbartextsHidden", false).toBool()) {
+        on_actionHide_tool_bar_texts_triggered();
     }
     if (settings.value("outputWindowHidden", true).toBool()) {
         on_actionOnly_editor_triggered();
@@ -598,6 +603,7 @@ void MainWindow::closeEvent(QCloseEvent* e) {
     settings.setValue("size", size());
     settings.setValue("pos", pos());
     settings.setValue("toolbarHidden", ui->toolBar->isHidden());
+    settings.setValue("toolbartextsHidden", solverConfLabel->isHidden());
     settings.setValue("outputWindowHidden", ui->outputDockWidget->isHidden());
 
     settings.setValue("findWrapAround", ui->check_wrap->isChecked());
@@ -2118,6 +2124,7 @@ void MainWindow::openProject(const QString& fileName)
                     if (ce && ce->filepath == "")
                         tabCloseRequest(closeTab);
                 }
+                ui->actionShow_project_explorer->setChecked(true);
             } else {
                 MainWindow* mw = new MainWindow(fileName);
                 QPoint p = pos();
@@ -2360,6 +2367,21 @@ void MainWindow::on_actionHide_tool_bar_triggered()
     } else {
         ui->toolBar->hide();
         ui->actionHide_tool_bar->setText("Show tool bar");
+    }
+}
+
+void MainWindow::on_actionHide_tool_bar_texts_triggered()
+{
+    if (ui->toolBar->toolButtonStyle() == Qt::ToolButtonIconOnly) {
+        ui->toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        runButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        solverConfLabel->show();
+        ui->actionHide_tool_texts_bar->setText("Hide tool bar texts");
+    } else {
+        ui->toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        runButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        solverConfLabel->hide();
+        ui->actionHide_tool_texts_bar->setText("Show tool bar texts");
     }
 }
 

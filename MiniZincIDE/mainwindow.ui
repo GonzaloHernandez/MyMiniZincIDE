@@ -49,7 +49,7 @@
        </sizepolicy>
       </property>
       <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
+       <enum>Qt::FocusPolicy::StrongFocus</enum>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -88,10 +88,10 @@
        </size>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
       <property name="lineWidth">
        <number>0</number>
@@ -193,7 +193,7 @@
              <string>not found</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -220,7 +220,7 @@
           <item row="0" column="11">
            <spacer name="horizontalSpacer_8">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -261,7 +261,7 @@
      <x>0</x>
      <y>0</y>
      <width>1490</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -370,6 +370,7 @@
     <addaction name="actionNext_tab"/>
     <addaction name="separator"/>
     <addaction name="actionHide_tool_bar"/>
+    <addaction name="actionHide_tool_texts_bar"/>
     <addaction name="actionToggle_profiler_info"/>
     <addaction name="separator"/>
     <addaction name="actionShow_search_profiler"/>
@@ -409,11 +410,8 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
    <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::BottomDockWidgetArea|Qt::DockWidgetArea::LeftDockWidgetArea|Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Output</string>
@@ -443,7 +441,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -475,10 +473,10 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::BottomDockWidgetArea|Qt::DockWidgetArea::LeftDockWidgetArea|Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Project</string>
@@ -530,7 +528,7 @@
      <item>
       <widget class="QScrollArea" name="scrollArea_2">
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -541,7 +539,7 @@
           <x>0</x>
           <y>0</y>
           <width>68</width>
-          <height>786</height>
+          <height>766</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -984,7 +982,15 @@
     <string>Hide tool bar</string>
    </property>
   </action>
+  <action name="actionHide_tool_texts_bar">
+   <property name="text">
+    <string>Hide tool bar texts</string>
+   </property>
+  </action>
   <action name="actionShow_project_explorer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="minizincide.qrc">
      <normaloff>:/icons/images/package-x-generic.png</normaloff>:/icons/images/package-x-generic.png</iconset>
@@ -1055,6 +1061,9 @@
    </property>
   </action>
   <action name="actionEditSolverConfig">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="minizincide.qrc">
      <normaloff>:/icons/images/applications-system.png</normaloff>:/icons/images/applications-system.png</iconset>
