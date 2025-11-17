@@ -2538,8 +2538,10 @@ void MainWindow::on_actionEditSolverConfig_triggered()
 {
     if (ui->configWindow_dockWidget->isHidden()) {
         ui->configWindow_dockWidget->show();
+        ui->actionEditSolverConfig->setChecked(true);
     } else {
         ui->configWindow_dockWidget->hide();
+        ui->actionEditSolverConfig->setChecked(false);
     }
 }
 
