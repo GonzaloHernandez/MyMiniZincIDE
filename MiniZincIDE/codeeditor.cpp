@@ -274,12 +274,15 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
                     return;
                 }
             }
+            
             if (cursor.positionInBlock() < cursor.block().length()) {
                 QChar charBefore = line.at(pos - 1);
                 QChar charAfter  = line.at(pos);
-                if ((charBefore == '(' && charAfter == ')') ||
-                    (charBefore == '[' && charAfter == ']') ||
-                    (charBefore == '{' && charAfter == '}')) 
+                if ((charBefore == '('  && charAfter == ')' )   ||
+                    (charBefore == '['  && charAfter == ']' )   ||
+                    (charBefore == '{'  && charAfter == '}' )   || 
+                    (charBefore == '\"' && charAfter == '\"')   || 
+                    (charBefore == '\'' && charAfter == '\'')   ) 
                 {
                     cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
                     cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 2);
@@ -313,11 +316,53 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         cursor.insertText("{" + selected + "}");
         cursor.movePosition(QTextCursor::Left); 
         setTextCursor(cursor);
-    } else if ( e->key() == Qt::Key_ParenRight ||
-                e->key() == Qt::Key_BracketRight ||
-                e->key() == Qt::Key_BraceRight ) {
-
-        QTextCursor cursor = textCursor();        
+    } else if (e->key() == Qt::Key_QuoteDbl) {
+        auto cursor = textCursor();
+        if (cursor.positionInBlock() < cursor.block().length() - 1) { 
+            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+            QString charRight = cursor.selectedText();
+            cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
+           
+            QChar typedChar = e->text().isEmpty() ? QChar() : e->text().at(0);
+            if (typedChar.isPrint() && charRight == typedChar) {
+                e->accept();
+                cursor.movePosition(QTextCursor::Right);
+                setTextCursor(cursor);
+                return;
+            }
+        }
+        e->accept();
+        cursor = textCursor();
+        QString selected = cursor.selectedText();
+        cursor.insertText("\"" + selected + "\"");
+        cursor.movePosition(QTextCursor::Left); 
+        setTextCursor(cursor);
+    } else if (e->key() == Qt::Key_Apostrophe) {
+        auto cursor = textCursor();
+        if (cursor.positionInBlock() < cursor.block().length() - 1) { 
+            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+            QString charRight = cursor.selectedText();
+            cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
+           
+            QChar typedChar = e->text().isEmpty() ? QChar() : e->text().at(0);
+            if (typedChar.isPrint() && charRight == typedChar) {
+                e->accept();
+                cursor.movePosition(QTextCursor::Right);
+                setTextCursor(cursor);
+                return;
+            }
+        }
+        e->accept();
+        cursor = textCursor(); 
+        QString selected = cursor.selectedText();
+        cursor.insertText("\'" + selected + "\'");
+        cursor.movePosition(QTextCursor::Left); 
+        setTextCursor(cursor);
+    } else if ( e->key() == Qt::Key_ParenRight  ||
+                e->key() == Qt::Key_BracketRight||
+                e->key() == Qt::Key_BraceRight  )
+    {
+        QTextCursor cursor = textCursor();
         if (cursor.positionInBlock() < cursor.block().length() - 1) { 
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
             QString charRight = cursor.selectedText();
