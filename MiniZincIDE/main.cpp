@@ -19,6 +19,12 @@ int main(int argc, char *argv[])
     QStringList args = QApplication::arguments();
     QStringList files;
     bool hadProject = false;
+
+    QFont font = QApplication::font();
+    int currentSize = font.pointSize();
+    font.setPointSize(10);
+    QApplication::setFont(font);
+
     for (int i=1; i<args.size(); i++) {
         if (args[i].endsWith(".mzp")) {
             MainWindow* mw = new MainWindow(args[i]);
